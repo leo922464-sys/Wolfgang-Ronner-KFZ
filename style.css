@@ -1123,6 +1123,64 @@ p { line-height: 1.68; }
 ═══════════════════════════════════════════════════════════════ */
 .section-testimonials { background: var(--c-white); }
 
+/* ── Rating summary  — large score, stars, Google badge ───────── */
+.rating-summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-8);
+  flex-wrap: wrap;
+  max-width: 560px;
+  margin: 0 auto var(--sp-16);
+  padding: var(--sp-8) var(--sp-10);
+  background: linear-gradient(145deg, var(--c-ash) 0%, #ffffff 100%);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-md);
+}
+
+.rating-summary-score {
+  font-family: var(--ff-display);
+  font-size: 4.2rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--c-night);
+  /* Subtle red gradient text for premium feel */
+  background: linear-gradient(135deg, var(--c-night) 0%, var(--c-steel) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.rating-summary-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.rating-summary-stars {
+  color: #FFB800;
+  font-size: 1.3rem;
+  letter-spacing: 3px;
+  line-height: 1;
+}
+.rating-summary-text {
+  font-size: .92rem;
+  color: var(--c-slate);
+}
+.rating-summary-text strong { color: var(--c-night); font-weight: 700; }
+
+.rating-summary-google {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: var(--c-white);
+  box-shadow: var(--sh-sm);
+  flex-shrink: 0;
+}
+
 /* Carousel container hides overflow */
 .carousel-wrap {
   position: relative;
@@ -1149,9 +1207,18 @@ p { line-height: 1.68; }
   flex-direction: column;
   gap: var(--sp-4);
   border-bottom: 3px solid transparent;
-  transition: border-color var(--t-base), box-shadow var(--t-base);
+  /* Lift + soft shadow on hover, GPU-composited */
+  transition:
+    border-color var(--t-base),
+    box-shadow   var(--t-slow),
+    transform    260ms var(--ease-out-expo);
+  will-change: transform;
 }
-.tcard:hover { border-bottom-color: var(--c-red); box-shadow: var(--sh-md); }
+.tcard:hover {
+  border-bottom-color: var(--c-red);
+  box-shadow: var(--sh-lg);
+  transform: translateY(-6px);
+}
 
 .tcard-stars {
   color: #FFB800;
@@ -1646,6 +1713,17 @@ p { line-height: 1.68; }
   .carousel-prev  { left: -4px; }
   .carousel-next  { right: -4px; }
 
+  /* Rating summary: stack vertically, hide Google badge column shift */
+  .rating-summary {
+    flex-direction: column;
+    text-align: center;
+    gap: var(--sp-4);
+    padding: var(--sp-6);
+  }
+  .rating-summary-score { font-size: 3.2rem; }
+  .rating-summary-detail { align-items: center; }
+  .rating-summary-google { margin-left: 0; }
+
   /* Über uns */
   .ueber-badge-float { right: var(--sp-2); bottom: var(--sp-2); }
 
@@ -1917,9 +1995,9 @@ body {
 
 /* ── 7. TESTIMONIALS  — staggered cascade entrance ────────────── */
 /*
- * Cards already have .reveal + JS stagger via --stagger-i.
- * We upgrade the entrance to use cardEntrance (scale + fade)
- * which is more cinematic than plain fadeUp.
+ * JS (initTestimonialCascade) assigns .card-cascade + --cascade-delay
+ * to every .tcard and triggers .visible on all of them together
+ * once the section scrolls into view — true staggered cascade.
  */
 .tcard {
   /* Override the generic .reveal transition when JS assigns
